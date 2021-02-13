@@ -202,7 +202,7 @@ func getAbsolutePath(dir string) (string, error) {
 	return absDir, nil
 }
 
-func LoadConfig() error { 
+func (a *App) LoadConfig() error { 
 	
    	appConfig, err := loadConfig(a.ConfigPath)
 	if err != nil {
