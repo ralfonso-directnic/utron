@@ -1,4 +1,4 @@
-module github.com/gernest/utron
+module github.com/ralfonso-directnic/utron
 
 require (
 	cloud.google.com/go v0.27.0 // indirect
