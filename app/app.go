@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-
 	"github.com/gernest/qlstore"
 	"github.com/gernest/utron/config"
 	"github.com/gernest/utron/controller"
@@ -105,12 +104,6 @@ func (a *App) init() error {
 	}
 	a.Config = appConfig
 
-	views, err := view.NewSimpleView(appConfig.ViewsDir)
-	if err != nil {
-		return err
-	}
-	a.View = views
-
 	// only when mode is allowed
 	if !appConfig.NoModel {
 		model := models.NewModel()
@@ -142,6 +135,14 @@ func (a *App) init() error {
 
 	}
 	return nil
+}
+
+//sets the view to use
+
+func (a *App) SetView(vw view.View){
+
+a.View = vw
+
 }
 
 func getSesionStore(cfg *config.Config) (sessions.Store, error) {
