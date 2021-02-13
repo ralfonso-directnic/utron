@@ -202,6 +202,16 @@ func getAbsolutePath(dir string) (string, error) {
 	return absDir, nil
 }
 
+func LoadConfig() error { 
+	
+   	appConfig, err := loadConfig(a.ConfigPath)
+	if err != nil {
+		return err
+	}
+	a.Config = appConfig
+        return nil
+}
+
 // loadConfig loads the configuration file. If cfg is provided, then it is used as the directory
 // for searching the configuration files. It defaults to the directory named config in the current
 // working directory.
