@@ -32,7 +32,6 @@ type Config struct {
 	DatabaseConn string `json:"database_conn" yaml:"database_conn" toml:"database_conn" hcl:"database_conn"`
 	Automigrate  bool   `json:"automigrate" yaml:"automigrate" toml:"automigrate" hcl:"automigrate"`
 	NoModel      bool   `json:"no_model" yaml:"no_model" toml:"no_model" hcl:"no_model"`
-
 	// session
 	SessionName     string `json:"session_name" yaml:"session_name" toml:"session_name" hcl:"session_name"`
 	SessionPath     string `json:"session_path" yaml:"session_path" toml:"session_path" hcl:"session_path"`
@@ -40,7 +39,7 @@ type Config struct {
 	SessionMaxAge   int    `json:"session_max_age" yaml:"session_max_age" toml:"session_max_age" hcl:"session_max_age"`
 	SessionSecure   bool   `json:"session_secure" yaml:"session_secure" toml:"session_secure" hcl:"session_secure"`
 	SessionHTTPOnly bool   `json:"session_httponly" yaml:"session_httponly" toml:"session_httponly" hcl:"session_httponly"`
-
+	SessionFilePath string `json:"session_file_path" yaml:"session_file_path" toml:"session_file_path" hcl:"session_file_path"`
 	// The name of the session store to use
 	// Options are
 	// file , cookie ,ql
@@ -54,6 +53,7 @@ type Config struct {
 
 	// flash message
 	FlashContextKey string `json:"flash_context_key" yaml:"flash_context_key" toml:"flash_context_key" hcl:"flash_context_key"`
+	ExtraData map[string]interface{} `json:"extra_data" yaml:"extra_data" toml:"extra_data" hcl:"extra_data"`
 }
 
 // DefaultConfig returns the default configuration settings.
@@ -71,6 +71,8 @@ func DefaultConfig() *Config {
 		SessionName:   "_utron",
 		SessionPath:   "/",
 		SessionMaxAge: 2592000,
+		SessionStore: "cookie",
+		SessionFilePath: "./sessions",
 		SessionKeyPair: []string{
 			string(a), string(b),
 		},

@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/gernest/utron/config"
+	"github.com/ralfonso-directnic/utron/config"
 	"github.com/jinzhu/gorm"
 
 	// support mysql, sqlite3 and postgresql

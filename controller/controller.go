@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"reflect"
 
-	"github.com/gernest/utron/base"
+	"github.com/ralfonso-directnic/utron/base"
 )
 
 // Controller is an interface for utron controllers

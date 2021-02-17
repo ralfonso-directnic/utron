@@ -1,22 +1,19 @@
 package app
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
-	"github.com/gernest/qlstore"
-	"github.com/gernest/utron/config"
-	"github.com/gernest/utron/controller"
-	"github.com/gernest/utron/logger"
-	"github.com/gernest/utron/models"
-	"github.com/gernest/utron/router"
-	"github.com/gernest/utron/view"
+	"github.com/ralfonso-directnic/utron/config"
+	"github.com/ralfonso-directnic/utron/controller"
+	"github.com/ralfonso-directnic/utron/logger"
+	"github.com/ralfonso-directnic/utron/models"
+	"github.com/ralfonso-directnic/utron/router"
+	"github.com/ralfonso-directnic/utron/view"
+	"github.com/ralfonso-directnic/utron/session"
 	"github.com/gorilla/sessions"
-	// load ql drier
-	_ "github.com/cznic/ql/driver"
 )
 
 //StaticServerFunc is a function that returns the static assetsfiles server.
@@ -113,12 +110,18 @@ func (a *App) init() error {
 		}
 		a.Model = model
 	}
+	
+	//if no session store is set, then load a default
+	
+	if(a.SessionStore == nil){
 
-	// The sessionistore s really not critical. The application can just run
-	// without session set
-	store, err := getSesionStore(appConfig)
-	if err == nil {
-		a.SessionStore = store
+    	// The sessionistore s really not critical. The application can just run
+    	// without session set
+    	store, err := getSessionStore(appConfig)
+    	if err == nil {
+    		a.SessionStore = store
+    	}
+    	
 	}
 
 	a.Router.Options = a.options()
@@ -145,26 +148,12 @@ a.View = vw
 
 }
 
-func getSesionStore(cfg *config.Config) (sessions.Store, error) {
-	opts := &sessions.Options{
-		Path:     cfg.SessionPath,
-		Domain:   cfg.SessionDomain,
-		MaxAge:   cfg.SessionMaxAge,
-		Secure:   cfg.SessionSecure,
-		HttpOnly: cfg.SessionSecure,
-	}
-	db, err := sql.Open("ql-mem", "session.db")
-	if err != nil {
-		return nil, err
-	}
-	err = qlstore.Migrate(db)
-	if err != nil {
-		return nil, err
-	}
-
-	store := qlstore.NewQLStore(db, "/", 2592000, keyPairs(cfg.SessionKeyPair)...)
-	store.Options = opts
-	return store, nil
+func getSessionStore(cfg *config.Config) (sessions.Store, error) {
+	
+	sess := session.New(cfg)
+	
+	return sess.LoadStore()
+	
 }
 
 func keyPairs(src []string) [][]byte {
