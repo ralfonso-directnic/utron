@@ -10,7 +10,6 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
-
 	"github.com/BurntSushi/toml"
 	"github.com/fatih/camelcase"
 	"github.com/gorilla/securecookie"
@@ -25,6 +24,9 @@ type Config struct {
 	AppName      string `json:"app_name" yaml:"app_name" toml:"app_name" hcl:"app_name"`
 	BaseURL      string `json:"base_url" yaml:"base_url" toml:"base_url" hcl:"base_url"`
 	Port         int    `json:"port" yaml:"port" toml:"port" hcl:"port"`
+	SslKeyPath   string   `json:"ssl_key_path" yaml:"ssl_key_path" toml:"ssl_key_path" hcl:"ssl_key_path"`
+	SslCertPath  string   `json:"ssl_cert_path" yaml:"ssl_cert_path" toml:"ssl_cert_path" hcl:"ssl_cert_path"`
+	PortSsl      int   `json:"port_ssl" yaml:"port_ssl" toml:"port_ssl" hcl:"port_ssl"`
 	Verbose      bool   `json:"verbose" yaml:"verbose" toml:"verbose" hcl:"verbose"`
 	StaticDir    string `json:"static_dir" yaml:"static_dir" toml:"static_dir" hcl:"static_dir"`
 	ViewsDir     string `json:"view_dir" yaml:"view_dir" toml:"view_dir" hcl:"view_dir"`
@@ -178,6 +180,25 @@ func (c *Config) SyncEnv() error {
 
 	}
 	return nil
+}
+
+
+//returns http or https depending on the config
+func (c *Config) GetProtocol() string { 
+    
+    
+    if len(c.SslCertPath) > 0 && len(c.SslKeyPath) > 0 && c.PortSsl >0 { 
+        
+        
+        return "https"
+        
+    }else{
+        
+        return "http"
+    }
+    
+    
+    
 }
 
 // getEnvName returns all upper case and underscore separated string, from field.

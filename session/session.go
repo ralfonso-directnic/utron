@@ -8,7 +8,7 @@ package session
             "github.com/ralfonso-directnic/utron/config"
 		    "github.com/gernest/qlstore"
 	        _ "github.com/cznic/ql/driver"
-	       "github.com/gorilla/securecookie"
+	      // "github.com/gorilla/securecookie"
     )
 
 
@@ -111,14 +111,13 @@ package session
     	
     	opts := s.getOptions()
     	    	
-        authKeyOne := securecookie.GenerateRandomKey(64)
-        encryptionKeyOne := securecookie.GenerateRandomKey(32)
+        //authKeyOne := securecookie.GenerateRandomKey(64)
+       // encryptionKeyOne := securecookie.GenerateRandomKey(32)
 
 
 
         store := sessions.NewCookieStore(
-                authKeyOne,
-                encryptionKeyOne,
+                keyPairs(s.config.SessionKeyPair)...
         )
         
         store.Options = opts
@@ -134,14 +133,13 @@ package session
     	
         opts := s.getOptions()
     	
-        authKeyOne := securecookie.GenerateRandomKey(64)
-        encryptionKeyOne := securecookie.GenerateRandomKey(32)
+        //authKeyOne := securecookie.GenerateRandomKey(64)
+        //encryptionKeyOne := securecookie.GenerateRandomKey(32)
 
 
     	store := sessions.NewFilesystemStore(
     		s.config.SessionFilePath,
-    		authKeyOne,
-    		encryptionKeyOne,
+    		keyPairs(s.config.SessionKeyPair)...
     	)
 
         store.Options = opts
