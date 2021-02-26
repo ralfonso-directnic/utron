@@ -482,5 +482,14 @@ func (r *Router) LoadRoutes(cfgPath string) {
 
 // Static registers static handler for path perfix
 func (r *Router) Static(prefix string, h http.FileSystem) {
+
+    
 	r.PathPrefix(prefix).Handler(http.StripPrefix(prefix, http.FileServer(h)))
+}
+
+// Static registers static handler for path perfix
+func (r *Router) AddHandler(prefix string, h http.Handler) {
+
+    
+	r.PathPrefix(prefix).Handler(h)
 }

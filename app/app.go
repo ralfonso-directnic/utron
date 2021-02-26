@@ -20,7 +20,7 @@ import (
 //
 // The first argument retrued is the path prefix for the static assets. If strp
 // is set to true then the prefix is going to be stripped.
-type StaticServerFunc func(*config.Config) (prefix string, strip bool, h http.Handler)
+type StaticServerFunc func(*config.Config) (prefix string, strip bool,  h http.Handler)
 
 // App is the main utron application.
 type App struct {
@@ -60,12 +60,12 @@ func NewMVC(cfg ...string) (*App, error) {
 
 //StaticServer implements StaticServerFunc.
 //
-// This uses the http.Fileserver to handle static assets. The routes prefixed
+// This uses the http.Filesystem to handle static assets. The routes prefixed
 // with /static/ are static asset routes by default.
-func StaticServer(cfg *config.Config) (string, bool, http.Handler) {
-	static, _ := getAbsolutePath(cfg.StaticDir)
+func StaticServer(cfg *config.Config) (string, bool,  http.Handler) {
+	static, _ := GetAbsolutePath(cfg.StaticDir)
 	if static != "" {
-		return "/static/", true, http.FileServer(http.Dir(static))
+		return "/static/", true, http.StripPrefix("/static/", http.FileServer(http.Dir(static)))
 	}
 	return "", false, nil
 }
@@ -102,7 +102,7 @@ func (a *App) init() error {
 	a.Config = appConfig
 
 	// only when mode is allowed
-	if !appConfig.NoModel {
+	if !a.Config.NoModel {
 		model := models.NewModel()
 		err = model.OpenWithConfig(appConfig)
 		if err != nil {
@@ -130,13 +130,34 @@ func (a *App) init() error {
 
 	// In case the StaticDir is specified in the Config file, register
 	// a handler serving contents of that directory under the PathPrefix /static/.
-	if appConfig.StaticDir != "" {
-		static, _ := getAbsolutePath(appConfig.StaticDir)
-		if static != "" {
-			a.Router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(static))))
-		}
+
+	if (a.StaticServer!=nil){
+    	
+    	dir,success,fs := a.StaticServer(a.Config)
+    	
+    	if(success == true){
+    
+    	//we can't use static because if we strip the path prefix in Router.Static then we don't look into the embedded fs correctly
+    	//a.Router.PathPrefix(dir).Handler(http.FileServer(fs))
+    	a.Router.AddHandler(dir,fs)
+
+    	
+    	}
+    	
+    	
+	}else if a.Config.StaticDir != "" {
+		           
+		           
+		            static, _ := GetAbsolutePath(a.Config.StaticDir)
+			       //a.Router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(static))))
+			       if(static!=""){
+			       a.Router.Static("/static/",http.Dir(static))
+		           }
 
 	}
+	
+	
+	
 	return nil
 }
 
@@ -167,7 +188,7 @@ func keyPairs(src []string) [][]byte {
 // getAbsolutePath returns the absolute path to dir. If the dir is relative, then we add
 // the current working directory. Checks are made to ensure the directory exist.
 // In case of any error, an empty string is returned.
-func getAbsolutePath(dir string) (string, error) {
+func GetAbsolutePath(dir string) (string, error) {
 	info, err := os.Stat(dir)
 	if err != nil {
 		return "", err
